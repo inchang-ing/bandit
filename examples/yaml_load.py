@@ -1,5 +1,7 @@
 import json
 import yaml
+from yaml import BaseLoader
+from yaml import CBaseLoader
 from yaml import CSafeLoader
 from yaml import SafeLoader
 
@@ -26,3 +28,10 @@ yaml.load("{}", SafeLoader)
 yaml.load("{}", yaml.SafeLoader)
 yaml.load("{}", CSafeLoader)
 yaml.load("{}", yaml.CSafeLoader)
+
+# no issue should be found: BaseLoader/CBaseLoader only build strings,
+# lists and dicts -- they do not construct arbitrary objects (see #1477)
+yaml.load("{}", Loader=yaml.BaseLoader)
+yaml.load("{}", yaml.BaseLoader)
+yaml.load("{}", Loader=yaml.CBaseLoader)
+yaml.load("{}", yaml.CBaseLoader)

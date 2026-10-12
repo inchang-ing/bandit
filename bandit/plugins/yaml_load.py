@@ -56,14 +56,22 @@ def yaml_load(context):
 
     qualname_list = qualname.split(".")
     func = qualname_list[-1]
+    # ``SafeLoader``/``CSafeLoader`` and ``BaseLoader``/``CBaseLoader`` are
+    # safe: ``BaseLoader`` only ever builds strings, lists and dicts (it does
+    # not construct arbitrary objects), so it must not be flagged as unsafe
+    # -- see #1477.
     if all(
         [
             "yaml" in qualname_list,
             func == "load",
             not context.check_call_arg_value("Loader", "SafeLoader"),
             not context.check_call_arg_value("Loader", "CSafeLoader"),
+            not context.check_call_arg_value("Loader", "BaseLoader"),
+            not context.check_call_arg_value("Loader", "CBaseLoader"),
             not context.get_call_arg_at_position(1) == "SafeLoader",
             not context.get_call_arg_at_position(1) == "CSafeLoader",
+            not context.get_call_arg_at_position(1) == "BaseLoader",
+            not context.get_call_arg_at_position(1) == "CBaseLoader",
         ]
     ):
         return bandit.Issue(
