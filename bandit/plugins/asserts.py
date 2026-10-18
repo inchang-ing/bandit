@@ -68,7 +68,12 @@ def gen_config(name):
 @test.test_id("B101")
 @test.checks("Assert")
 def assert_used(context, config):
-    for skip in config.get("skips", []):
+    skips = config.get("skips", [])
+    # a single glob may be given as a plain string, for example when
+    # configured in a TOML file, normalize it to a list of globs
+    if isinstance(skips, str):
+        skips = [skips]
+    for skip in skips:
         if fnmatch.fnmatch(context.filename, skip):
             return None
 

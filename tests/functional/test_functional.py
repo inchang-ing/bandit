@@ -641,6 +641,22 @@ class FunctionalTests(testtools.TestCase):
         }
         self.check_example("assert.py", expect)
 
+        # a plain string is a single glob, not a sequence of characters
+        # (regression test for https://github.com/PyCQA/bandit/issues/1478)
+        test._config = {"skips": "*assert.py"}
+        expect = {
+            "SEVERITY": {"UNDEFINED": 0, "LOW": 0, "MEDIUM": 0, "HIGH": 0},
+            "CONFIDENCE": {"UNDEFINED": 0, "LOW": 0, "MEDIUM": 0, "HIGH": 0},
+        }
+        self.check_example("assert.py", expect)
+
+        test._config = {"skips": "tests/**.py"}
+        expect = {
+            "SEVERITY": {"UNDEFINED": 0, "LOW": 1, "MEDIUM": 0, "HIGH": 0},
+            "CONFIDENCE": {"UNDEFINED": 0, "LOW": 0, "MEDIUM": 0, "HIGH": 1},
+        }
+        self.check_example("assert.py", expect)
+
         test._config = {}
         expect = {
             "SEVERITY": {"UNDEFINED": 0, "LOW": 1, "MEDIUM": 0, "HIGH": 0},
